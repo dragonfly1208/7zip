@@ -33,7 +33,7 @@ Z7_COM7F_IMF(CHandler::GetFileTimeType(UInt32 *timeType))
   *timeType = TimeOptions.Prec;
   return S_OK;
 }
-
+#if 0
 static bool IsSimpleAsciiString(const wchar_t *s)
 {
   for (;;)
@@ -45,7 +45,7 @@ static bool IsSimpleAsciiString(const wchar_t *s)
       return false;
   }
 }
-
+#endif
 
 static int FindZipMethod(const char *s, const char * const *names, unsigned num)
 {
@@ -387,6 +387,41 @@ Z7_COM7F_IMF(CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
 
     updateItems.Add(ui);
   }
+  //设置中文 -start
+  CMyComPtr<IArchiveUpdateCallbackArchiveProp> getArchiveProp;
+  {
+	  CMyComPtr<IArchiveUpdateCallback> udateCallBack2(callback);
+	  udateCallBack2.QueryInterface(IID_IArchiveUpdateCallbackArchiveProp, &getArchiveProp);
+  }
+  if(getArchiveProp){
+	  UINT codePage = _forceCodePage ? _specifiedCodePage : CP_OEMCP;
+
+	  NCOM::CPropVariant prop;
+	  RINOK(getArchiveProp->GetArchiveProperty(kpidComment, &prop));
+	  if (prop.vt == VT_EMPTY)
+	  {
+		  // ui.Comment.Free();
+	  }
+	  else if (prop.vt != VT_BSTR)
+		  return E_INVALIDARG;
+	  else
+	  {
+		  UString s = prop.bstrVal;
+		  AString a;
+		  if (ui.IsUtf8)
+			  ConvertUnicodeToUTF8(s, a);
+		  else
+		  {
+			  bool defaultCharWasUsed;
+			  a = UnicodeStringToMultiByte(s, codePage, '_', defaultCharWasUsed);
+		  }
+		  if (a.Len() >= (1 << 16))
+			  return E_INVALIDARG;
+		  //m_Archive.ArcInfo.Comment.Free();
+		  m_Archive.ArcInfo.Comment.CopyFrom((const Byte *)(const char *)a, a.Len());
+	  }
+  }
+  //设置中文 -end
 
 
   CMyComPtr<ICryptoGetTextPassword2> getTextPassword;
@@ -411,9 +446,9 @@ Z7_COM7F_IMF(CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
     {
       if (!m_ForceAesMode)
         options.IsAesMode = thereAreAesUpdates;
-
-      if (!IsSimpleAsciiString(password))
-        return E_INVALIDARG;
+	  //设置中文
+      //if (!IsSimpleAsciiString(password))
+      //  return E_INVALIDARG;
       if (password)
         UnicodeStringToMultiByte2(options.Password, (LPCOLESTR)password, CP_OEMCP);
       if (options.IsAesMode)
@@ -488,7 +523,7 @@ Z7_COM7F_IMF(CHandler::UpdateItems(ISequentialOutStream *outStream, UInt32 numIt
   return Update(
       EXTERNAL_CODECS_VARS
       m_Items, updateItems, outStream,
-      m_Archive.IsOpen() ? &m_Archive : NULL, _removeSfxBlock,
+      &m_Archive, _removeSfxBlock,//mode for archive comment
       uo, options, callback);
  
   COM_TRY_END2

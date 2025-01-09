@@ -482,6 +482,16 @@ IArchiveUpdateCallbackFile::ReportOperation
   UInt32 index
   UInt32 notifyOp (NUpdateNotifyOp)
 */
+//设置中文 --start
+
+#define Z7_IFACEM_IArchiveUpdateCallbackArchiveProp(x) \
+    x(GetArchiveProperty(PROPID propID, PROPVARIANT *value)) \
+
+Z7_IFACE_CONSTR_ARCHIVE(IArchiveUpdateCallbackArchiveProp, 0x85)
+//{
+//	INTERFACE_IArchiveUpdateCallbackArchiveProp(PURE);
+//};
+//--end
 
 #define Z7_IFACEM_IArchiveUpdateCallbackFile(x) \
   x(GetStream2(UInt32 index, ISequentialInStream **inStream, UInt32 notifyOp)) \
