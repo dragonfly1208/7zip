@@ -2037,6 +2037,14 @@ HRESULT Update(
     const CCompressionMethodMode &compressionMethodMode,
     IArchiveUpdateCallback *updateCallback)
 {
+    //mode for archive comment
+    CByteBuffer *pComment = NULL;
+    if (inArchive) {
+        pComment = &inArchive->ArcInfo.Comment;
+        if (!inArchive->IsOpen())
+            inArchive = NULL;
+    }
+
   /*
   // it was tested before
   if (inArchive)
@@ -2131,7 +2139,7 @@ HRESULT Update(
       inputItems, updateItems,
       updateOptions,
       compressionMethodMode, outSeqMode,
-      inArchive ? &inArchive->ArcInfo.Comment : NULL,
+      pComment,//mode for archive comment
       updateCallback))
 
   return cacheStream->FinalFlush();

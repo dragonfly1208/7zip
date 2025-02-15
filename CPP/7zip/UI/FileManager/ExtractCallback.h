@@ -19,9 +19,9 @@
 #include "../../IPassword.h"
 #endif
 
-#ifndef Z7_SFX
+//#ifndef Z7_SFX
 #include "IFolder.h"
-#endif
+//#endif
 
 #include "ProgressDialog2.h"
 
@@ -188,11 +188,11 @@ class CExtractCallbackImp Z7_final:
   public IOpenCallbackUI,    // NON-COM interface
   public IFolderArchiveExtractCallback2,
  #ifndef Z7_SFX
-  public IFolderOperationsExtractCallback,
   public IFolderExtractToStreamCallback,
-  public ICompressProgressInfo,
   public IArchiveRequestMemoryUseCallback,
  #endif
+   public IFolderOperationsExtractCallback,
+   public ICompressProgressInfo,
  #ifndef Z7_NO_CRYPTO
   public ICryptoGetTextPassword,
  #endif
@@ -202,10 +202,10 @@ class CExtractCallbackImp Z7_final:
   Z7_COM_QI_ENTRY(IFolderArchiveExtractCallback2)
  #ifndef Z7_SFX
   Z7_COM_QI_ENTRY(IFolderOperationsExtractCallback)
-  Z7_COM_QI_ENTRY(IFolderExtractToStreamCallback)
-  Z7_COM_QI_ENTRY(ICompressProgressInfo)
   Z7_COM_QI_ENTRY(IArchiveRequestMemoryUseCallback)
  #endif
+  Z7_COM_QI_ENTRY(IFolderExtractToStreamCallback)
+  Z7_COM_QI_ENTRY(ICompressProgressInfo)
  #ifndef Z7_NO_CRYPTO
   Z7_COM_QI_ENTRY(ICryptoGetTextPassword)
  #endif
@@ -282,9 +282,9 @@ public:
 #ifndef Z7_SFX
   CVirtFileSystem *VirtFileSystemSpec;
   CMyComPtr<ISequentialOutStream> VirtFileSystem;
+#endif				
   UInt64 NumFolders;
   UInt64 NumFiles;
-#endif
 
 #ifndef Z7_NO_CRYPTO
   UString Password;

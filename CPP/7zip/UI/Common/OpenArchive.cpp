@@ -1954,8 +1954,8 @@ HRESULT CArc::OpenStream2(const COpenOptions &op)
       #endif
       
       // Some handlers do not set total bytes. So we set it here
-      if (op.callback)
-        RINOK(op.callback->SetTotal(NULL, &fileSize))
+//      if (op.callback)
+//        RINOK(op.callback->SetTotal(NULL, &fileSize))
 
       if (op.stream)
       {
@@ -1983,6 +1983,12 @@ HRESULT CArc::OpenStream2(const COpenOptions &op)
         result = openSeq->OpenSeq(op.seqStream);
       }
       
+	  if (op.callback) {
+		  UInt64 numItems = 0;
+		  RINOK(archive->GetNumberOfItems((UInt32*)(&numItems)));
+		  RINOK(op.callback->SetTotal(&numItems, &fileSize));
+	  }
+	  
       RINOK(ReadBasicProps(archive, 0, result))
       
       if (result == S_FALSE)

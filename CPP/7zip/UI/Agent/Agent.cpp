@@ -1542,6 +1542,19 @@ Z7_COM7F_IMF(CAgentFolder::Extract(const UInt32 *indices,
       false, // includeFolderSubItemsInFlatMode
       realIndices); //
 
+  {
+	  CMyComPtr<IFolderOperationsExtractCallback> opExCallback;
+	  if (extractCallback2) {
+		  extractCallback2->QueryInterface(IID_IFolderOperationsExtractCallback, (void **)&opExCallback);
+		  UInt64 realNumItems = realIndices.Size();
+		  if (opExCallback)
+			  opExCallback->SetNumFiles(realNumItems);
+
+	  }
+  }
+
+
+
   #ifdef SUPPORT_LINKS
 
   if (!testMode)

@@ -50,10 +50,10 @@ void CExtractCallbackImp::Init()
 
   NumArchiveErrors = 0;
   ThereAreMessageErrors = false;
-  #ifndef Z7_SFX
+  //#ifndef Z7_SFX
   NumFolders = NumFiles = 0;
   NeedAddFile = false;
-  #endif
+  //#endif
 }
 
 void CExtractCallbackImp::AddError_Message(LPCWSTR s)
@@ -69,19 +69,19 @@ void CExtractCallbackImp::AddError_Message_ShowArcPath(LPCWSTR s)
 }
 
 
-#ifndef Z7_SFX
+//#ifndef Z7_SFX
 
 Z7_COM7F_IMF(CExtractCallbackImp::SetNumFiles(UInt64 numFiles))
 {
- #ifdef Z7_SFX
-  UNUSED_VAR(numFiles)
- #else
+// #ifdef Z7_SFX
+//  UNUSED_VAR(numFiles)
+// #else
   ProgressDialog->Sync.Set_NumFilesTotal(numFiles);
- #endif
+// #endif
   return S_OK;
 }
 
-#endif
+//#endif
 
 Z7_COM7F_IMF(CExtractCallbackImp::SetTotal(UInt64 total))
 {
@@ -107,7 +107,7 @@ HRESULT CExtractCallbackImp::Open_SetTotal(const UInt64 *files, const UInt64 *by
     if (files)
     {
       _totalFiles_Defined = true;
-      // res = ProgressDialog->Sync.Set_NumFilesTotal(*files);
+      res = ProgressDialog->Sync.Set_NumFilesTotal(*files);
     }
     else
       _totalFiles_Defined = false;
@@ -175,13 +175,13 @@ void CExtractCallbackImp::Open_Clear_PasswordWasAsked_Flag()
 #endif
 
 
-#ifndef Z7_SFX
+//#ifndef Z7_SFX
 Z7_COM7F_IMF(CExtractCallbackImp::SetRatioInfo(const UInt64 *inSize, const UInt64 *outSize))
 {
   ProgressDialog->Sync.Set_Ratio(inSize, outSize);
   return S_OK;
 }
-#endif
+//#endif
 
 /*
 Z7_COM7F_IMF(CExtractCallbackImp::SetTotalFiles(UInt64 total)
@@ -263,7 +263,7 @@ HRESULT CExtractCallbackImp::MessageError(const char *message, const FString &pa
   return S_OK;
 }
 
-#ifndef Z7_SFX
+//#ifndef Z7_SFX
 
 Z7_COM7F_IMF(CExtractCallbackImp::ShowMessage(const wchar_t *s))
 {
@@ -271,7 +271,7 @@ Z7_COM7F_IMF(CExtractCallbackImp::ShowMessage(const wchar_t *s))
   return S_OK;
 }
 
-#endif
+//#endif
 
 void SetExtractErrorMessage(Int32 opRes, Int32 encrypted, const wchar_t *fileName, UString &s);
 void SetExtractErrorMessage(Int32 opRes, Int32 encrypted, const wchar_t *fileName, UString &s)
@@ -387,13 +387,14 @@ Z7_COM7F_IMF(CExtractCallbackImp::SetOperationResult(Int32 opRes, Int32 encrypte
   }
   
   _currentFilePath.Empty();
-  #ifndef Z7_SFX
+  //#ifndef Z7_SFX
   if (_isFolder)
     NumFolders++;
   else
     NumFiles++;
-  ProgressDialog->Sync.Set_NumFilesCur(NumFiles);
-  #endif
+  UInt64 NumAll = NumFolders + NumFiles;
+  ProgressDialog->Sync.Set_NumFilesCur(NumAll);
+  //#endif
   
   return S_OK;
 }
@@ -432,20 +433,20 @@ HRESULT CExtractCallbackImp::SetCurrentFilePath2(const wchar_t *path)
   return S_OK;
 }
 
-#ifndef Z7_SFX
+//#ifndef Z7_SFX
 
 Z7_COM7F_IMF(CExtractCallbackImp::SetCurrentFilePath(const wchar_t *path))
 {
-  #ifndef Z7_SFX
+//  #ifndef Z7_SFX
   if (NeedAddFile)
     NumFiles++;
   NeedAddFile = true;
   ProgressDialog->Sync.Set_NumFilesCur(NumFiles);
-  #endif
+//  #endif
   return SetCurrentFilePath2(path);
 }
 
-#endif
+//#endif
 
 UString HResultToMessage(HRESULT errorCode);
 
@@ -705,7 +706,7 @@ Z7_COM7F_IMF(CExtractCallbackImp::CryptoGetTextPassword(BSTR *password))
 
 #endif
 
-#ifndef Z7_SFX
+//#ifndef Z7_SFX
 
 Z7_COM7F_IMF(CExtractCallbackImp::AskWrite(
     const wchar_t *srcPath, Int32 srcIsFolder,
@@ -805,7 +806,7 @@ Z7_COM7F_IMF(CExtractCallbackImp::AskWrite(
   return StringToBstr(destPathResultTemp, destPathResult);
 }
 
-
+#ifndef Z7_SFX
 Z7_COM7F_IMF(CExtractCallbackImp::UseExtractToStream(Int32 *res))
 {
   *res = BoolToInt(StreamMode);
